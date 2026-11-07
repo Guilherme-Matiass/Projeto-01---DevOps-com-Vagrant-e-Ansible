@@ -3,8 +3,8 @@
 **Professor:** Leonidas Lima | **Período:** 2026.2  
 
 **Equipe:**  
-- Bruno Anderson (Matrícula: 20251380014)  
-- Guilherme Matias (Matrícula: 20251380012)  
+ Bruno Anderson (Matrícula: 20251380014)  
+ Guilherme Matias (Matrícula: 20251380012)  
 
 **Descrição:**  
 Projeto de provisionamento de 4 máquinas virtuais Debian utilizando Vagrant. A configuração automatizada (Ansible) abrange serviços de infraestrutura de redes e sistemas, incluindo DHCP, DNS, NFS, LVM, Autofs, Apache2 e MariaDB.  

@@ -8,7 +8,6 @@ Vagrant.configure("2") do |config|
     trigger.run = {inline: "bash -c 'VBoxManage dhcpserver remove --network=HostInterfaceNetworking-vboxnet0 2>/dev/null || true'"}
   end
 
-  # Servidor de arquivos (arq)
   config.vm.define "arq" do |arq|
     arq.vm.hostname = "arq.bruno.guilherme.devops"
     arq.vm.network "private_network", ip: "192.168.56.114"
@@ -31,7 +30,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Servidor de banco de dados (db)
   config.vm.define "db" do |db|
     db.vm.hostname = "db.bruno.guilherme.devops"
     db.vm.network "private_network", type: "dhcp", mac: "080027000112"
@@ -42,7 +40,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Servidor de aplicação (app)
   config.vm.define "app" do |app|
     app.vm.hostname = "app.bruno.guilherme.devops"
     app.vm.network "private_network", type: "dhcp", mac: "080027000142"
@@ -53,7 +50,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Host Cliente (cli)
   config.vm.define "cli" do |cli|
     cli.vm.hostname = "cli.bruno.guilherme.devops"
     cli.vm.network "private_network", type: "dhcp"
@@ -64,7 +60,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Provisionamento unificado via Ansible
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
     ansible.inventory_path = "inventory.ini"
