@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
     arq.vm.provider "virtualbox" do |vb|
       vb.memory = "512"
       vb.linked_clone = true
+
       vb.check_guest_additions = false
 
       file_to_disk1 = "disk1.vdi"
@@ -60,7 +61,6 @@ Vagrant.configure("2") do |config|
       vb.check_guest_additions = false
     end
 
-    # O Ansible só deve rodar quando a última máquina (cli) estiver pronta
     cli.vm.provision "ansible" do |ansible|
       ansible.playbook = "playbook.yml"
       ansible.inventory_path = "inventory.ini"
