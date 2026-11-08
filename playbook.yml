@@ -1,0 +1,338 @@
+
+---
+- name: Configuração do Servidor de Arquivos (arq) - Executado Primeiro
+  hosts: arquivos
+  become: yes
+  tasks:
+    - name: Atualizar repositórios e instalar serviços (DHCP, DNS, LVM, NFS)
+      apt:
+        name:
+          - isc-dhcp-server
+          - bind9
+          - lvm2
+          - nfs-kernel-server
+        state: present
+        update_cache: yes
+        upgrade: dist
+
+    - name: Configurar DHCP (dhcpd.conf)
+      copy:
+        dest: /etc/dhcp/dhcpd.conf
+        content: |
+          authoritative;
+          default-lease-time 180;
+          max-lease-time 3600;
+
+          subnet 192.168.56.0 netmask 255.255.255.0 {
+            range 192.168.56.50 192.168.56.100;
+            option routers 192.168.56.1;
+            option domain-name-servers 192.168.56.114;
+            option domain-name "bruno.guilherme.devops";
+          }
+
+          host db {
+            hardware ethernet 08:00:27:00:01:12;
+            fixed-address 192.168.56.112;
+          }
+
+          host app {
+            hardware ethernet 08:00:27:00:01:42;
+            fixed-address 192.168.56.142;
+          }
+      notify: Reiniciar DHCP
+
+    - name: Configurar interface do DHCP
+      lineinfile:
+        path: /etc/default/isc-dhcp-server
+        regexp: '^INTERFACESv4='
+        line: 'INTERFACESv4="eth1"'
+
+    - name: Configurar DNS (named.conf.options)
+      copy:
+        dest: /etc/bind/named.conf.options
+        content: |
+          options {
+              directory "/var/cache/bind";
+              forwarders { 1.1.1.1; 8.8.8.8; };
+              allow-query { 192.168.56.0/24; localhost; };
+              dnssec-validation auto;
+              listen-on-v6 { any; };
+          };
+      notify: Reiniciar DNS
+
+    - name: Declarar zonas DNS (named.conf.local)
+      copy:
+        dest: /etc/bind/named.conf.local
+        content: |
+          zone "bruno.guilherme.devops" {
+              type master;
+              file "/etc/bind/db.bruno.guilherme";
+          };
+          zone "56.168.192.in-addr.arpa" {
+              type master;
+              file "/etc/bind/db.192.168.56";
+          };
+
+    - name: Criar arquivo da zona direta
+      copy:
+        dest: /etc/bind/db.bruno.guilherme
+        content: |
+          $TTL    604800
+          @       IN      SOA     arq.bruno.guilherme.devops. admin.bruno.guilherme.devops. ( 1 604800 86400 2419200 604800 )
+          @       IN      NS      arq.bruno.guilherme.devops.
+          arq     IN      A       192.168.56.114
+          db      IN      A       192.168.56.112
+          app     IN      A       192.168.56.142
+
+    - name: Criar arquivo da zona reversa
+      copy:
+        dest: /etc/bind/db.192.168.56
+        content: |
+          $TTL    604800
+          @       IN      SOA     arq.bruno.guilherme.devops. admin.bruno.guilherme.devops. ( 1 604800 86400 2419200 604800 )
+          @       IN      NS      arq.bruno.guilherme.devops.
+          114     IN      PTR     arq.bruno.guilherme.devops.
+          112     IN      PTR     db.bruno.guilherme.devops.
+          142     IN      PTR     app.bruno.guilherme.devops.
+
+    - name: Criar LVM (VG 'dados' e LV 'ifpb')
+      lvg:
+        vg: dados
+        pvs: /dev/sdb,/dev/sdc,/dev/sdd
+      ignore_errors: yes
+
+    - name: Criar Volume Lógico 'ifpb'
+      lvol:
+        vg: dados
+        lv: ifpb
+        size: 15G
+      ignore_errors: yes
+
+    - name: Formatar o LV ifpb (ext4)
+      filesystem:
+        fstype: ext4
+        dev: /dev/dados/ifpb
+
+    - name: Criar ponto de montagem e montar /dados
+      mount:
+        path: /dados
+        src: /dev/dados/ifpb
+        fstype: ext4
+        state: mounted
+
+    - name: Criar usuário nfs-ifpb
+      user:
+        name: nfs-ifpb
+        shell: /usr/sbin/nologin
+        system: yes
+
+    - name: Criar diretório NFS e definir permissões
+      file:
+        path: /dados/nfs
+        state: directory
+        owner: nfs-ifpb
+        group: nfs-ifpb
+        mode: '0755'
+
+    - name: Configurar Exportação NFS (/etc/exports)
+      shell: |
+        UID_NFS=$(id -u nfs-ifpb)
+        GID_NFS=$(id -g nfs-ifpb)
+        echo "/dados/nfs 192.168.56.0/24(rw,sync,all_squash,anonuid=$UID_NFS,anongid=$GID_NFS)" > /etc/exports
+      notify: Reiniciar NFS
+
+  handlers:
+    - name: Reiniciar DHCP
+      service: name=isc-dhcp-server state=restarted
+    - name: Reiniciar DNS
+      service: name=bind9 state=restarted
+    - name: Reiniciar NFS
+      service: name=nfs-kernel-server state=restarted
+
+
+- name: Configurações Globais (Todas as máquinas)
+  hosts: all
+  become: yes
+  tasks:
+    - name: Atualizar repositórios e pacotes
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Instalar Chrony (NTP) e Cliente NFS
+      apt:
+        name:
+          - chrony
+          - nfs-common
+        state: present
+
+    - name: Configurar timezone (America/Recife)
+      timezone:
+        name: America/Recife
+
+    - name: Configurar Chrony para usar pool.ntp.br
+      lineinfile:
+        path: /etc/chrony/chrony.conf
+        regexp: '^pool '
+        line: 'pool pool.ntp.br iburst'
+      notify: Reiniciar Chrony
+
+    - name: Criar grupo ifpb
+      group:
+        name: ifpb
+        state: present
+
+    - name: Criar usuários (bruno e guilherme) e chaves SSH
+      user:
+        name: "{{ item }}"
+        groups: ifpb, vagrant
+        append: yes
+        generate_ssh_key: yes
+        shell: /bin/bash
+      loop:
+        - bruno
+        - guilherme
+
+    - name: Configurar sudoers para o grupo ifpb
+      copy:
+        dest: /etc/sudoers.d/ifpb
+        content: "%ifpb ALL=(ALL) ALL"
+        mode: '0440'
+
+    - name: Configurar mensagem de saudação (Banner SSH)
+      copy:
+        dest: /etc/issue.net
+        content: "Acesso apenas para pessoas com autorização expressa!!!\n"
+
+    - name: Configurar servidor SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+        - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+        - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+        - { regexp: '^#?Banner', line: 'Banner /etc/issue.net' }
+      notify: Reiniciar SSH
+
+    - name: Restringir acesso SSH a grupos específicos
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowGroups vagrant ifpb"
+        state: present
+      notify: Reiniciar SSH
+
+  handlers:
+    - name: Reiniciar Chrony
+      service: name=chrony state=restarted
+    - name: Reiniciar SSH
+      service: name=ssh state=restarted
+
+
+- name: Configuração do Servidor de Banco de Dados (db)
+  hosts: banco
+  become: yes
+  tasks:
+    - name: Instalar MariaDB e Autofs
+      apt:
+        name:
+          - mariadb-server
+          - autofs
+        state: present
+
+    - name: Configurar Autofs para montar NFS
+      lineinfile:
+        path: /etc/auto.master
+        line: "/var/nfs /etc/auto.nfs --timeout=300"
+
+    - name: Definir mapeamento Autofs
+      copy:
+        dest: /etc/auto.nfs
+        content: "nfs -fstype=nfs,rw,sync 192.168.56.114:/dados/nfs"
+      notify: Reiniciar Autofs
+
+  handlers:
+    - name: Reiniciar Autofs
+      service: name=autofs state=restarted
+
+
+- name: Configuração do Servidor de Aplicação (app)
+  hosts: aplicacao
+  become: yes
+  tasks:
+    - name: Instalar Apache2 e Autofs
+      apt:
+        name:
+          - apache2
+          - autofs
+        state: present
+
+    - name: Personalizar index.html do Apache2
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head><title>Projeto 01 - DevOps</title></head>
+          <body>
+            <h1>Projeto 01 - DevOps com Vagrant e Ansible</h1>
+            <h2>Integrantes:</h2>
+            <ul>
+              <li>Bruno Anderson - Matrícula: 20251380014</li>
+              <li>Guilherme Matias - Matrícula: 20251380012</li>
+            </ul>
+          </body>
+          </html>
+
+    - name: Configurar Autofs para montar NFS
+      lineinfile:
+        path: /etc/auto.master
+        line: "/var/nfs /etc/auto.nfs --timeout=300"
+
+    - name: Definir mapeamento Autofs
+      copy:
+        dest: /etc/auto.nfs
+        content: "nfs -fstype=nfs,rw,sync 192.168.56.114:/dados/nfs"
+      notify: Reiniciar Autofs
+
+  handlers:
+    - name: Reiniciar Autofs
+      service: name=autofs state=restarted
+
+
+- name: Configuração do Host Cliente (cli)
+  hosts: cliente
+  become: yes
+  tasks:
+    - name: Instalar pacotes Cliente (Firefox, Xauth, Autofs)
+      apt:
+        name:
+          - firefox-esr
+          - xauth
+          - autofs
+        state: present
+
+    - name: Habilitar X11 Forwarding no SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?X11Forwarding'
+        line: 'X11Forwarding yes'
+      notify: Reiniciar SSH
+
+    - name: Configurar Autofs para montar NFS
+      lineinfile:
+        path: /etc/auto.master
+        line: "/var/nfs /etc/auto.nfs --timeout=300"
+
+    - name: Definir mapeamento Autofs
+      copy:
+        dest: /etc/auto.nfs
+        content: "nfs -fstype=nfs,rw,sync 192.168.56.114:/dados/nfs"
+      notify: Reiniciar Autofs
+
+  handlers:
+    - name: Reiniciar SSH
+      service: name=ssh state=restarted
+    - name: Reiniciar Autofs
+      service: name=autofs state=restarted
