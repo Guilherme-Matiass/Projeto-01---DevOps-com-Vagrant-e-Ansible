@@ -1,4 +1,3 @@
-
 ---
 - name: Configuração do Servidor de Arquivos (arq) - Executado Primeiro
   hosts: arquivos
@@ -13,7 +12,6 @@
           - nfs-kernel-server
         state: present
         update_cache: yes
-        upgrade: dist
 
     - name: Configurar DHCP (dhcpd.conf)
       copy:
@@ -112,6 +110,7 @@
       filesystem:
         fstype: ext4
         dev: /dev/dados/ifpb
+      ignore_errors: yes
 
     - name: Criar ponto de montagem e montar /dados
       mount:
@@ -119,6 +118,7 @@
         src: /dev/dados/ifpb
         fstype: ext4
         state: mounted
+      ignore_errors: yes
 
     - name: Criar usuário nfs-ifpb
       user:
@@ -157,7 +157,6 @@
     - name: Atualizar repositórios e pacotes
       apt:
         update_cache: yes
-        upgrade: dist
 
     - name: Instalar Chrony (NTP) e Cliente NFS
       apt:
@@ -245,7 +244,7 @@
       lineinfile:
         path: /etc/auto.master
         line: "/var/nfs /etc/auto.nfs --timeout=300"
-
+        
     - name: Definir mapeamento Autofs
       copy:
         dest: /etc/auto.nfs
@@ -289,7 +288,7 @@
       lineinfile:
         path: /etc/auto.master
         line: "/var/nfs /etc/auto.nfs --timeout=300"
-
+        
     - name: Definir mapeamento Autofs
       copy:
         dest: /etc/auto.nfs
@@ -324,7 +323,7 @@
       lineinfile:
         path: /etc/auto.master
         line: "/var/nfs /etc/auto.nfs --timeout=300"
-
+        
     - name: Definir mapeamento Autofs
       copy:
         dest: /etc/auto.nfs

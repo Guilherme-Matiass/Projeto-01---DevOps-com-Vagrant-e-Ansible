@@ -1,3 +1,4 @@
+
 Vagrant.configure("2") do |config|
   config.vm.box = "debian/bookworm64"
   config.ssh.insert_key = false
@@ -15,7 +16,7 @@ Vagrant.configure("2") do |config|
       vb.memory = "512"
       vb.linked_clone = true
       vb.check_guest_additions = false
-      
+
       file_to_disk1 = "disk1.vdi"
       file_to_disk2 = "disk2.vdi"
       file_to_disk3 = "disk3.vdi"
@@ -58,13 +59,14 @@ Vagrant.configure("2") do |config|
       vb.linked_clone = true
       vb.check_guest_additions = false
     end
-  end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbook.yml"
-    ansible.inventory_path = "inventory.ini"
-    ansible.config_file = "ansible.cfg"
-    ansible.become = true
-    ansible.limit = "all"
+    # O Ansible só deve rodar quando a última máquina (cli) estiver pronta
+    cli.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+      ansible.inventory_path = "inventory.ini"
+      ansible.config_file = "ansible.cfg"
+      ansible.become = true
+      ansible.limit = "all"
+    end
   end
 end
