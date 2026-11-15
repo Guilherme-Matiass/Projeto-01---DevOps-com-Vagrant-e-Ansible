@@ -1,0 +1,216 @@
+--------------------- Verificando arq.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 19:57:58 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ gps.jd.ntp.br                 1   6   377    55   +290us[ +290us] +/-   28ms
+^+ c.ntp.br                      2   6   377    54  -3439us[-3439us] +/-   46ms
+^* a.ntp.br                      2   6   377    55   -699us[-1005us] +/-   26ms
+^+ e.st1.ntp.br                  1   6   377    55   -804us[-1110us] +/-   26ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+  PV         VG    Fmt  Attr PSize   PFree  
+  /dev/sdb   dados lvm2 a--  <10.00g      0 
+  /dev/sdc   dados lvm2 a--  <10.00g   4.99g
+  /dev/sdd   dados lvm2 a--  <10.00g <10.00g
+Acesso apenas para pessoas com autorização expressa!!!
+  LV   VG    Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  ifpb dados -wi-ao---- 15.00g                                                    
+
+--------------------- Verificando app.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 19:58:05 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ e.st1.ntp.br                  1   6    77    60  -1031us[+1695us] +/-   28ms
+^+ c.ntp.br                      2   6    77    58  +1989us[+1989us] +/-   38ms
+^* gps.nu.ntp.br                 1   6    77    60   -742us[+1984us] +/-   28ms
+^+ a.ntp.br                      2   6    77    60  -2902us[-2902us] +/-   27ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+-rw-r--r-- 1 999 995 23 Nov 15 19:58 /var/nfs/guilherme.txt
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+-rw-r--r-- 1 999 995 19 Nov 15 19:58 /var/nfs/bruno.txt
+
+--------------------- Verificando db.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 19:58:09 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^* a.ntp.br                      2   6   177    24   +863us[+1367us] +/-   27ms
+^+ gps.jd.ntp.br                 1   6   177    24    +81us[  +81us] +/-   26ms
+^+ a.st1.ntp.br                  1   6   177    24  -4650us[-4650us] +/-   35ms
+^+ b.ntp.br                      2   6   177    24   +565us[+1069us] +/-   28ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+Dados NFS de guilherme
+
+--------------------- Verificando cli.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 19:58:13 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ gps.nu.ntp.br                 1   6    77    39   +321us[ +321us] +/-   28ms
+^+ b.ntp.br                      2   6    77    39   -645us[ -645us] +/-   27ms
+^* gps.jd.ntp.br                 1   6    77    41   -587us[-1247us] +/-   29ms
+^+ a.st1.ntp.br                  1   6    77    41  -2332us[-2332us] +/-   27ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Dados NFS de bruno
+===============================================================================
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ ./proj.py guilherme.bruno
+--------------------- Verificando arq.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 20:00:24 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ gps.jd.ntp.br                 1   6   377     6   -415us[ +209us] +/-   29ms
+^+ c.ntp.br                      2   6   377     4  -2905us[-2905us] +/-   45ms
+^* a.ntp.br                      2   6   377     5   +742us[+1367us] +/-   28ms
+^+ e.st1.ntp.br                  1   6   377     7  -1421us[ -798us] +/-   27ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+  PV         VG    Fmt  Attr PSize   PFree  
+  /dev/sdb   dados lvm2 a--  <10.00g      0 
+  /dev/sdc   dados lvm2 a--  <10.00g   4.99g
+  /dev/sdd   dados lvm2 a--  <10.00g <10.00g
+Acesso apenas para pessoas com autorização expressa!!!
+  LV   VG    Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  ifpb dados -wi-ao---- 15.00g                                                    
+
+--------------------- Verificando app.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 20:00:27 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ e.st1.ntp.br                  1   6   377     7   -169us[ -169us] +/-   28ms
+^+ c.ntp.br                      2   6   377     5  +3123us[+3123us] +/-   38ms
+^* gps.nu.ntp.br                 1   6   377     7    +93us[-1685ns] +/-   28ms
+^+ a.ntp.br                      2   6   377     6  -1895us[-1895us] +/-   27ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+-rw-r--r-- 1 999 995 23 Nov 15 20:00 /var/nfs/guilherme.txt
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+-rw-r--r-- 1 999 995 19 Nov 15 20:00 /var/nfs/bruno.txt
+
+--------------------- Verificando db.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 20:00:30 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^* a.ntp.br                      2   6   377    35  +1175us[+1763us] +/-   27ms
+^+ gps.jd.ntp.br                 1   6   377    35  +1540us[+2128us] +/-   28ms
+^+ a.st1.ntp.br                  1   6   377    35   +373us[ +373us] +/-   27ms
+^+ b.ntp.br                      2   6   377    36   +272us[ +860us] +/-   27ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Acesso apenas para pessoas com autorização expressa!!!
+Dados NFS de guilherme
+
+--------------------- Verificando cli.guilherme.bruno.devops ---------------------
+Acesso apenas para pessoas com autorização expressa!!!
+Sun Nov 15 20:00:32 -03 2026
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^+ gps.nu.ntp.br                 1   6   377    47   -992us[-1187us] +/-   27ms
+^+ b.ntp.br                      2   6   377    47   -228us[ -228us] +/-   28ms
+^* gps.jd.ntp.br                 1   6   377    47   +670us[ +475us] +/-   28ms
+^+ a.st1.ntp.br                  1   6   377    47   +593us[ +397us] +/-   28ms
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1001(guilherme) gid=1001(guilherme) groups=1001(guilherme),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+uid=1002(bruno) gid=1002(bruno) groups=1002(bruno),996(ifpb)
+Acesso apenas para pessoas com autorização expressa!!!
+Dados NFS de bruno
+
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh cli -c "ping -c1 arq.guilherme.bruno.devops"
+PING arq.guilherme.bruno.devops (192.168.56.112) 56(84) bytes of data.
+64 bytes from arq.guilherme.bruno.devops (192.168.56.112): icmp_seq=1 ttl=64 time=0.187 ms
+
+--- arq.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.187/0.187/0.187/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh cli -c "ping -c1 db.guilherme.bruno.devops"
+PING db.guilherme.bruno.devops (192.168.56.114) 56(84) bytes of data.
+64 bytes from db.guilherme.bruno.devops (192.168.56.114): icmp_seq=1 ttl=64 time=0.298 ms
+
+--- db.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.298/0.298/0.298/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh cli -c "ping -c1 app.guilherme.bruno.devops"
+PING app.guilherme.bruno.devops (192.168.56.124) 56(84) bytes of data.
+64 bytes from app.guilherme.bruno.devops (192.168.56.124): icmp_seq=1 ttl=64 time=0.179 ms
+
+--- app.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.179/0.179/0.179/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh db -c "ping -c1 arq.guilherme.bruno.devops"
+PING arq.guilherme.bruno.devops (192.168.56.112) 56(84) bytes of data.
+64 bytes from arq.guilherme.bruno.devops (192.168.56.112): icmp_seq=1 ttl=64 time=0.208 ms
+
+--- arq.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.208/0.208/0.208/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh db -c "ping -c1 app.guilherme.bruno.devops"
+PING app.guilherme.bruno.devops (192.168.56.124) 56(84) bytes of data.
+64 bytes from app.guilherme.bruno.devops (192.168.56.124): icmp_seq=1 ttl=64 time=0.342 ms
+
+--- app.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.342/0.342/0.342/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh db -c "ping -c1 cli.guilherme.bruno.devops"
+PING cli.guilherme.bruno.devops (192.168.56.60) 56(84) bytes of data.
+64 bytes from cli.guilherme.bruno.devops (192.168.56.60): icmp_seq=1 ttl=64 time=0.180 ms
+
+--- cli.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.180/0.180/0.180/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh app -c "ping -c1 arq.guilherme.bruno.devops"
+PING arq.guilherme.bruno.devops (192.168.56.112) 56(84) bytes of data.
+64 bytes from arq.guilherme.bruno.devops (192.168.56.112): icmp_seq=1 ttl=64 time=0.156 ms
+
+--- arq.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.156/0.156/0.156/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh app -c "ping -c1 db.guilherme.bruno.devops"
+PING db.guilherme.bruno.devops (192.168.56.114) 56(84) bytes of data.
+64 bytes from db.guilherme.bruno.devops (192.168.56.114): icmp_seq=1 ttl=64 time=0.180 ms
+
+--- db.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.180/0.180/0.180/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ vagrant ssh app -c "ping -c1 cli.guilherme.bruno.devops"
+PING cli.guilherme.bruno.devops (192.168.56.60) 56(84) bytes of data.
+64 bytes from cli.guilherme.bruno.devops (192.168.56.60): icmp_seq=1 ttl=64 time=0.202 ms
+
+--- cli.guilherme.bruno.devops ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.202/0.202/0.202/0.000 ms
+bruninboy@bruninboy:~/Projeto-01---DevOps-com-Vagrant-e-Ansible$ 
+
