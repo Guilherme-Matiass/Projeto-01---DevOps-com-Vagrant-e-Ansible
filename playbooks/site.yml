@@ -1,0 +1,6 @@
+---
+- name: Configuração global (todas as VMs)
+  ansible.builtin.import_playbook: global.yml
+
+- name: Serviços de cada VM (arq, db, app, cli)
+  ansible.builtin.import_playbook: etapa3.yml

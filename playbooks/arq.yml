@@ -1,0 +1,8 @@
+---
+- name: Servidor de arquivos (arq) - DHCP, DNS, LVM e NFS
+  hosts: arq
+  become: true
+  vars_files:
+    - ../group_vars/all.yml
+  roles:
+    - arq

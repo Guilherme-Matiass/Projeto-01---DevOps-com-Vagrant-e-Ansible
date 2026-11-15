@@ -1,0 +1,12 @@
+---
+- name: Servidor de arquivos (arq)
+  ansible.builtin.import_playbook: arq.yml
+
+- name: Servidor de banco de dados (db)
+  ansible.builtin.import_playbook: db.yml
+
+- name: Servidor de aplicação (app)
+  ansible.builtin.import_playbook: app.yml
+
+- name: Host cliente (cli)
+  ansible.builtin.import_playbook: cli.yml

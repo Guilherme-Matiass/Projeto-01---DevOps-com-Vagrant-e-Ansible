@@ -1,0 +1,9 @@
+
+[servidores]
+arq ansible_host=192.168.56.112
+db  ansible_host=192.168.56.114
+app ansible_host=192.168.56.124
+cli ansible_host=192.168.56.60
+
+[all:vars]
+ansible_user=vagrant
