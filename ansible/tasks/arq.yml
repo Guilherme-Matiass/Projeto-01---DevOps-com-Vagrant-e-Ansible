@@ -1,0 +1,160 @@
+---
+- name: Instalar os serviços do servidor de arquivos
+  ansible.builtin.apt:
+    name:
+      - isc-dhcp-server
+      - bind9
+      - bind9-utils
+      - lvm2
+      - nfs-kernel-server
+    state: present
+
+- name: Descobrir a interface que tem o IP interno do servidor
+  ansible.builtin.shell: |
+    ip -o -4 addr show | awk '$4 == "{{ ip_arq }}/24" {print $2; exit}'
+  register: asa_iface
+  changed_when: false
+
+- name: Falhar caso a interface privada não esteja configurada
+  ansible.builtin.assert:
+    that:
+      - asa_iface.stdout | length > 0
+    fail_msg: 'A interface privada do arq não recebeu o IP 192.168.56.112.'
+
+- name: Fixar interface do servidor DHCP
+  ansible.builtin.copy:
+    dest: /etc/default/isc-dhcp-server
+    content: |
+      INTERFACESv4="{{ asa_iface.stdout }}"
+      INTERFACESv6=""
+    mode: '0644'
+  notify: Reiniciar dhcp
+
+- name: Preparar configuração DHCP com reservas por MAC
+  ansible.builtin.template:
+    src: templates/dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    mode: '0644'
+  notify: Reiniciar dhcp
+
+- name: Configurar opções DNS do Bind
+  ansible.builtin.template:
+    src: templates/named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    mode: '0644'
+  notify: Reiniciar bind
+
+- name: Declarar zonas DNS direta e reversa
+  ansible.builtin.template:
+    src: templates/named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+    mode: '0644'
+  notify: Reiniciar bind
+
+- name: Criar zona direta
+  ansible.builtin.template:
+    src: templates/db.direta.j2
+    dest: '/etc/bind/db.{{ projeto_dominio }}'
+    mode: '0644'
+  notify: Reiniciar bind
+
+- name: Criar zona reversa
+  ansible.builtin.template:
+    src: templates/db.reversa.j2
+    dest: /etc/bind/db.192.168.56
+    mode: '0644'
+  notify: Reiniciar bind
+
+- name: Validar configuração DNS
+  ansible.builtin.command: named-checkconf
+  changed_when: false
+
+- name: Validar zona direta
+  ansible.builtin.command: 'named-checkzone {{ projeto_dominio }} /etc/bind/db.{{ projeto_dominio }}'
+  changed_when: false
+
+- name: Validar zona reversa
+  ansible.builtin.command: named-checkzone 56.168.192.in-addr.arpa /etc/bind/db.192.168.56
+  changed_when: false
+
+- name: Reiniciar serviços de rede antes dos clientes
+  ansible.builtin.meta: flush_handlers
+
+- name: Preparar VG dados e LV ifpb de 15 GB em três discos do laboratório
+  ansible.builtin.script: "{{ playbook_dir }}/../scripts/preparar-lvm.sh"
+  register: resultado_lvm
+  changed_when: "'ALTERADO' in resultado_lvm.stdout"
+
+- name: Garantir diretório de montagem /dados
+  ansible.builtin.file:
+    path: /dados
+    state: directory
+    mode: '0755'
+
+- name: Registrar volume LVM no fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^/dev/dados/ifpb\s+'
+    line: '/dev/dados/ifpb /dados ext4 defaults 0 2'
+    state: present
+
+- name: Consultar montagem atual de /dados
+  ansible.builtin.command: mountpoint -q /dados
+  register: asa_dados_montado
+  failed_when: false
+  changed_when: false
+
+- name: Montar o volume LVM se ainda nao estiver montado
+  ansible.builtin.command: mount /dados
+  when: asa_dados_montado.rc != 0
+
+- name: Criar usuario sem shell para NFS
+  ansible.builtin.user:
+    name: nfs-ifpb
+    group: ifpb
+    shell: /usr/sbin/nologin
+    home: /nonexistent
+    create_home: false
+    system: true
+
+- name: Criar diretorio compartilhado com escrita apenas pelo nfs-ifpb
+  ansible.builtin.file:
+    path: /dados/nfs
+    state: directory
+    owner: nfs-ifpb
+    group: ifpb
+    mode: '0755'
+
+- name: Obter UID remoto do usuario de exportacao
+  ansible.builtin.command: id -u nfs-ifpb
+  register: nfs_uid
+  changed_when: false
+
+- name: Obter GID remoto do usuario de exportacao
+  ansible.builtin.command: id -g nfs-ifpb
+  register: nfs_gid
+  changed_when: false
+
+- name: Garantir diretorio /etc/exports.d
+  ansible.builtin.file:
+    path: /etc/exports.d
+    state: directory
+    mode: "0755"
+
+- name: Exportar /dados/nfs para a rede interna
+  ansible.builtin.copy:
+    dest: /etc/exports.d/asa.exports
+    content: |
+      /dados/nfs 192.168.56.0/24(rw,sync,no_subtree_check,all_squash,anonuid={{ nfs_uid.stdout }},anongid={{ nfs_gid.stdout }})
+    mode: '0644'
+  notify: Atualizar exports
+
+- name: Garantir serviços ativos no arq
+  ansible.builtin.service:
+    name: '{{ item }}'
+    enabled: true
+    state: started
+  loop:
+    - bind9
+    - isc-dhcp-server
+    - nfs-kernel-server

@@ -1,0 +1,51 @@
+---
+- name: Configurar as quatro VMs do projeto ASA
+  hosts: all
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars.yml
+  handlers:
+    - name: Reiniciar chrony
+      ansible.builtin.service:
+        name: chrony
+        state: restarted
+    - name: Reiniciar ssh
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+    - name: Reiniciar dhcp
+      ansible.builtin.service:
+        name: isc-dhcp-server
+        enabled: true
+        state: restarted
+    - name: Reiniciar bind
+      ansible.builtin.service:
+        name: bind9
+        enabled: true
+        state: restarted
+    - name: Atualizar exports
+      ansible.builtin.command: exportfs -ra
+    - name: Reiniciar autofs
+      ansible.builtin.service:
+        name: autofs
+        state: restarted
+  tasks:
+    - name: Configurar recursos comuns
+      ansible.builtin.import_tasks: tasks/comum.yml
+
+    - name: Configurar a VM de arquivos
+      ansible.builtin.import_tasks: tasks/arq.yml
+      when: papel_vm == 'arq'
+
+    - name: Configurar a VM de banco de dados
+      ansible.builtin.import_tasks: tasks/db.yml
+      when: papel_vm == 'db'
+
+    - name: Configurar a VM de aplicacao
+      ansible.builtin.import_tasks: tasks/app.yml
+      when: papel_vm == 'app'
+
+    - name: Configurar a VM cliente
+      ansible.builtin.import_tasks: tasks/cli.yml
+      when: papel_vm == 'cli'

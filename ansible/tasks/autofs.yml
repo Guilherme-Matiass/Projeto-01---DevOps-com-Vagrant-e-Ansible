@@ -1,0 +1,33 @@
+---
+- name: Instalar autofs
+  ansible.builtin.apt:
+    name: autofs
+    state: present
+
+- name: Criar diretorio /var/nfs
+  ansible.builtin.file:
+    path: /var/nfs
+    state: directory
+    mode: '0755'
+
+- name: Registrar montagem direta em auto.master
+  ansible.builtin.copy:
+    dest: /etc/auto.master.d/asa.autofs
+    content: |
+      /- /etc/auto.asa --timeout=60
+    mode: '0644'
+  notify: Reiniciar autofs
+
+- name: Configurar autofs para /dados/nfs
+  ansible.builtin.copy:
+    dest: /etc/auto.asa
+    content: |
+      /var/nfs -fstype=nfs4,rw {{ ip_arq }}:/dados/nfs
+    mode: '0644'
+  notify: Reiniciar autofs
+
+- name: Garantir autofs ativo
+  ansible.builtin.service:
+    name: autofs
+    enabled: true
+    state: started

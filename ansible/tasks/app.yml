@@ -1,0 +1,20 @@
+---
+- name: Instalar servidor Apache
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+
+- name: Publicar pagina autoral com dados da equipe
+  ansible.builtin.template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+
+- name: Manter Apache ativo
+  ansible.builtin.service:
+    name: apache2
+    enabled: true
+    state: started
+
+- name: Montar NFS sob demanda no app
+  ansible.builtin.import_tasks: autofs.yml

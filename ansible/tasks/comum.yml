@@ -1,0 +1,123 @@
+---
+- name: Atualizar indice de pacotes
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Atualizar pacotes do Debian
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Instalar ferramentas e servicos comuns
+  ansible.builtin.apt:
+    name:
+      - chrony
+      - nfs-common
+      - sudo
+      - openssh-server
+      - ca-certificates
+      - python3
+    state: present
+
+- name: Ajustar fuso horario
+  ansible.builtin.command: timedatectl set-timezone America/Recife
+  when: ansible_date_time.tz not in ['BRT', 'UTC-03', '-03']
+  changed_when: true
+
+- name: Configurar fonte de tempo pool.ntp.br
+  ansible.builtin.copy:
+    dest: /etc/chrony/chrony.conf
+    content: |
+      pool pool.ntp.br iburst
+      driftfile /var/lib/chrony/chrony.drift
+      makestep 1 3
+      rtcsync
+      logdir /var/log/chrony
+    mode: '0644'
+  notify: Reiniciar chrony
+
+- name: Criar grupo ifpb
+  ansible.builtin.group:
+    name: ifpb
+    state: present
+
+- name: Criar grupo individual para cada estudante
+  ansible.builtin.group:
+    name: '{{ item.usuario }}'
+    state: present
+  loop: '{{ equipe }}'
+  loop_control:
+    label: '{{ item.usuario }}'
+
+- name: Criar estudantes e adicionar ao grupo ifpb
+  ansible.builtin.user:
+    name: '{{ item.usuario }}'
+    comment: '{{ item.nome }}'
+    group: '{{ item.usuario }}'
+    groups: ifpb
+    append: true
+    shell: /bin/bash
+    create_home: true
+  loop: '{{ equipe }}'
+  loop_control:
+    label: '{{ item.usuario }}'
+
+- name: Criar diretorio SSH de cada estudante
+  ansible.builtin.file:
+    path: '/home/{{ item.usuario }}/.ssh'
+    state: directory
+    owner: '{{ item.usuario }}'
+    group: '{{ item.usuario }}'
+    mode: '0700'
+  loop: '{{ equipe }}'
+  loop_control:
+    label: '{{ item.usuario }}'
+
+- name: Instalar no convidado a chave publica gerada na maquina real
+  ansible.builtin.copy:
+    dest: '/home/{{ item.usuario }}/.ssh/authorized_keys'
+    content: "{{ lookup('ansible.builtin.file', playbook_dir + '/../keys/' + item.usuario + '.pub') }}\n"
+    owner: '{{ item.usuario }}'
+    group: '{{ item.usuario }}'
+    mode: '0600'
+  loop: '{{ equipe }}'
+  loop_control:
+    label: '{{ item.usuario }}'
+
+- name: Dar privilegios sudo aos integrantes do grupo ifpb
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/90-ifpb
+    content: |
+      %ifpb ALL=(ALL:ALL) NOPASSWD: ALL
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Criar banner do SSH
+  ansible.builtin.copy:
+    dest: /etc/issue.net
+    content: |
+      Acesso apenas para pessoas com autorização expressa!!!
+    mode: '0644'
+
+- name: Restringir acesso SSH e permitir X11 no cliente
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/01-asa.conf
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PubkeyAuthentication yes
+      PermitRootLogin no
+      AllowGroups vagrant ifpb
+      X11Forwarding {{ 'yes' if papel_vm == 'cli' else 'no' }}
+      Banner /etc/issue.net
+    mode: '0644'
+  notify: Reiniciar ssh
+
+- name: Verificar a configuracao SSH completa
+  ansible.builtin.command: /usr/sbin/sshd -t
+  changed_when: false
+
+- name: Garantir que o cliente NFS exista
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present

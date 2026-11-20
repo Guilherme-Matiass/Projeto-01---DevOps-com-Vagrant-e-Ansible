@@ -1,0 +1,14 @@
+# Inventario auxiliar para testes depois do vagrant up.
+# Durante o primeiro provisionamento, o Vagrant usa o proprio inventario dinamico.
+[arq]
+arq ansible_host=192.168.56.112
+[db]
+db ansible_host=192.168.56.114
+[app]
+app ansible_host=192.168.56.124
+[cli]
+cli ansible_host=192.168.56.50
+[all:vars]
+ansible_user=bruno
+ansible_ssh_private_key_file=keys/bruno
+ansible_python_interpreter=/usr/bin/python3

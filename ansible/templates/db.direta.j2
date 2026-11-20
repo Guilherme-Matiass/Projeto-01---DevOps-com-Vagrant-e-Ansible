@@ -1,0 +1,8 @@
+$TTL 300
+@ IN SOA arq.{{ projeto_dominio }}. admin.{{ projeto_dominio }}. (
+  2026111801 3600 600 604800 300 )
+@ IN NS arq.{{ projeto_dominio }}.
+@ IN A {{ ip_arq }}
+arq IN A {{ ip_arq }}
+db IN A {{ ip_db }}
+app IN A {{ ip_app }}

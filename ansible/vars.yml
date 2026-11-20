@@ -1,0 +1,15 @@
+---
+projeto_dominio: bruno.guilherme.devops
+projeto_rede: 192.168.56.0/24
+ip_arq: 192.168.56.112
+ip_db: 192.168.56.114
+ip_app: 192.168.56.124
+mac_db: '08:00:27:12:00:14'
+mac_app: '08:00:27:12:01:14'
+equipe:
+  - usuario: bruno
+    nome: Bruno Anderson
+    matricula: '20251380012'
+  - usuario: guilherme
+    nome: Guilherme Matias
+    matricula: '20251380014'

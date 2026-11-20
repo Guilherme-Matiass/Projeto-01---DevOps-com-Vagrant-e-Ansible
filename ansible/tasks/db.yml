@@ -1,0 +1,14 @@
+---
+- name: Instalar MariaDB no banco de dados
+  ansible.builtin.apt:
+    name: mariadb-server
+    state: present
+
+- name: Manter MariaDB ativo
+  ansible.builtin.service:
+    name: mariadb
+    enabled: true
+    state: started
+
+- name: Montar NFS sob demanda no db
+  ansible.builtin.import_tasks: autofs.yml

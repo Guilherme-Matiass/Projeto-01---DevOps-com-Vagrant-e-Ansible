@@ -1,0 +1,10 @@
+---
+- name: Instalar aplicativos gráficos exigidos para o cliente
+  ansible.builtin.apt:
+    name:
+      - firefox-esr
+      - xauth
+    state: present
+
+- name: Montar NFS sob demanda no cliente
+  ansible.builtin.import_tasks: autofs.yml
