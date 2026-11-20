@@ -4,9 +4,23 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Impedir que o GRUB trave a atualizacao pedindo disco
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - grub-pc
+    - grub-pc-bin
+    - grub2-common
+    - grub-common
+
 - name: Atualizar pacotes do Debian
   ansible.builtin.apt:
+    update_cache: yes
     upgrade: dist
+    dpkg_options: "force-confdef,force-confold"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Instalar ferramentas e servicos comuns
   ansible.builtin.apt:
@@ -21,7 +35,7 @@
 
 - name: Ajustar fuso horario
   ansible.builtin.command: timedatectl set-timezone America/Recife
-  when: ansible_date_time.tz not in ['BRT', 'UTC-03', '-03']
+  when: ansible_facts.date_time.tz not in ['BRT', 'UTC-03', '-03']
   changed_when: true
 
 - name: Configurar fonte de tempo pool.ntp.br
