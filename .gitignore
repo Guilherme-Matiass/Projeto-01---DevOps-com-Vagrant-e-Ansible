@@ -3,3 +3,4 @@ keys/
 *.retry
 *.pyc
 __pycache__/
+proj.py

@@ -363,14 +363,4 @@ python3 verifica-proj1.py guilherme.bruno
 - Os usuários `guilherme` e `bruno` não possuem senha: o acesso é exclusivamente por chave pública.
 - O usuário `vagrant` continua com acesso por chave (a chave padrão do Vagrant), exigido pelo grupo `vagrant` em `AllowGroups`.
 
-## 7. Comandos para ser utilizado
-
-- vagrant up arq
-- ansible-playbook playbooks/site.yml --limit arq
-- mkdir -p keys && cp files/ssh_keys/* keys/ && chmod 600 keys/bruno keys/guilherme
-- vagrant up db app cli
-- ansible-playbook playbooks/site.yml
-- ssh-keyscan -H arq.guilherme.bruno.devops app.guilherme.bruno.devops 
-db.guilherme.bruno.devops cli.guilherme.bruno.devops 192.168.56.112 192.168.56.114 192.168.56.124 192.168.56.60 >> ~/.ssh/known_hosts 2>/dev/null
-- ./proj.py guilherme.bruno
 
